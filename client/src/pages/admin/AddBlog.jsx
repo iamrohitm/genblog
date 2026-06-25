@@ -2,8 +2,6 @@ import React, { useEffect, useRef, useState } from 'react'
 import { assets, blogCategories } from '../../assets/assets'
 import Quill from 'quill'
 
-
-
 const AddBlog = () => {
   const [image, setImage] = useState(false)
   const [title, setTitle] = useState('')
@@ -46,7 +44,6 @@ const AddBlog = () => {
 
           </div>
 
-
           <button
             type='button'
             className='absolute bottom-1 right-2 ml-2 text-xs text-white bg-black/70 px-2 py-1.5 rounded hover:underline cursor-pointer'
@@ -80,7 +77,6 @@ const AddBlog = () => {
         <button type='submit' className='mt-8 w-40 h-10 bg-primary text-white rounded cursor-pointer text-sm' >
           Add Blog
         </button>
-
 
       </div>
     

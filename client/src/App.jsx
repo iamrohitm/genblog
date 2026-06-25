@@ -10,7 +10,6 @@ import ListBlog from './pages/admin/ListBlog'
 import Login from './components/admin/Login'
 import 'quill/dist/quill.snow.css'
 
-
 const App = () => {
   return (
     <div>

@@ -3,7 +3,6 @@ import { blog_data, blogCategories } from "../assets/assets"
 import {motion, spring} from 'motion/react'
 import BlogCard from "./BlogCard"
 
-
 const BlogList= () => { 
     const [menu, setMenu] = useState('All')
   return (

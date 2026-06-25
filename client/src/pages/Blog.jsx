@@ -5,7 +5,6 @@ import Navbar from '../components/Navbar';
 import Moment from 'moment'
 import Loader from '../components/Loader';
 
-
 const Blog = () => {
   const {id} = useParams();
   const [data, setData] = useState(null);

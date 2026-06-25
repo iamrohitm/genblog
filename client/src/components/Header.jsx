@@ -1,7 +1,6 @@
 import React from 'react'
 import { assets } from '../assets/assets'
 
-
 const Header = () => {
   return (
     <div className='mx-8 sm:16 xs:mx-24 relative'>
@@ -26,11 +25,8 @@ const Header = () => {
 
         </form>
 
-
-
-
       </div>
-            <img src={assets.gradientBackground} className='absolute -top-50 -z-1 opacity-50' alt="" />
+      <img src={assets.gradientBackground} className='absolute -top-50 -z-1 opacity-50' alt="" />
 
 
       
