@@ -1,6 +1,9 @@
 import fs from 'fs'
 import imagekit from '../config/imageKit.js'
 import Blog from '../models/Blog.js'
+import Comment from '../models/Comment.js'
+
+
 
 export const addBlog = async(req , res)=>{
     try {
@@ -75,13 +78,11 @@ export const getBlogById = async(req,res)=>{
 export const deleteBlogById = async(req, res)=>{
     try{
 
-        const {deleteId} = req.params;
-        const blog = await Blog.findById(deleteId);
-        
-        if(!blog){
-            return res.json({success: false, message: 'Blog not found'})
-        }
+        const {deleteId} = req.body;
         await Blog.findByIdAndDelete(deleteId);
+
+        //delete all coments when blog is deleted
+        await Comment.deleteMany({blogId: deleteId})
         
         res.json({success: true, message: 'Blog deleted successfully'})
         
@@ -95,7 +96,7 @@ export const deleteBlogById = async(req, res)=>{
 //togglePublish -> you will have id is in req.body
 export const togglePublish = async(req,res)=>{
     try {
-        const {id} = req.params;
+        const {id} = req.body;
         const blog = await Blog.findById(id);
 
         if(!blog){
@@ -111,6 +112,26 @@ export const togglePublish = async(req,res)=>{
             } successfully`,
             blog
         });
+    } catch (error) {
+        res.json({success: false, message: error.message})
+    }
+}
+
+export const addComment = async(req,res)=>{
+    try {
+        const {blog, name, content} = req.body;
+        await Comment.create({blog, name, content});
+        res.json({success: true, message: 'Comment added for review'})
+    } catch (error) {
+        res.json({success: false, message: error.message})
+    }
+}
+
+export const getBlogComments = async(req,res)=>{
+    try {
+        const {blogId} = req.body;
+        const comment = await Comment.find({blog: blogId, isApproved: true}).sort({createdAt: -1});
+        res.json({success: true, comment})
     } catch (error) {
         res.json({success: false, message: error.message})
     }
