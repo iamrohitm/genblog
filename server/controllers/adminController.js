@@ -13,12 +13,12 @@ export const adminLogin = async(req,res)=>{
         const token = jwt.sign({email}, process.env.JWT_SECRET);
         
 
-        res.cookie('token', token, {
-            httpOnly: true,
-            secure: false,
-            sameSite: 'lax',
-            maxAge: 24*60*60*1000
-        })
+        // res.cookie('token', token, {
+        //     httpOnly: true,
+        //     secure: false,
+        //     sameSite: 'lax',
+        //     maxAge: 24*60*60*1000
+        // }) 
 
         res.json({success: true, token})
     }catch(err){
@@ -55,7 +55,7 @@ export const getDashboard = async(req, res)=>{
         const dashboardData = {
             recentBlogs, blogs, comments, draft
         }
-        res.json({success: true, bldashboardDataogs});
+        res.json({success: true, dashboardData});
     } catch (error) {
         res.json({success: false, message: error.message})
     }

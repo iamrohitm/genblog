@@ -4,8 +4,11 @@ import { assets, blog_data, comments_data } from '../assets/assets'
 import Navbar from '../components/Navbar';
 import Moment from 'moment'
 import Loader from '../components/Loader';
+import { useAppContext } from '../context/AppContext';
 
 const Blog = () => {
+  const {blogs} = useAppContext();
+
   const {id} = useParams();
   const [data, setData] = useState(null);
   const [comments, setComments] = useState([])
@@ -13,7 +16,7 @@ const Blog = () => {
   const [content, setContent] = useState("")
 
   const fetchData = async()=>{
-    const data = blog_data.find(item => item._id === id);
+    const data = blogs.find(item => item._id === id);
     setData(data)
   }
 
