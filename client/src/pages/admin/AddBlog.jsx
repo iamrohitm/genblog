@@ -1,16 +1,56 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { assets, blogCategories } from '../../assets/assets'
 import Quill from 'quill'
+import { useAppContext } from '../../context/AppContext'
+import toast from 'react-hot-toast'
+
 
 const AddBlog = () => {
+
+  const {axios} = useAppContext();
+  const [isAdding, setIsAdding] = useState(false);
+  const [loading, setLoading] = useState(false);
+
   const [image, setImage] = useState(false)
   const [title, setTitle] = useState('')
   const [subtitle, setSubtitle] = useState('')
-  const [categoty, setCategory] = useState('Startup')
+  const [category, setCategory] = useState('Startup')
   const [isPublished, setIsPublished] = useState(false)
 
-  const onSubmithandler = async(e)=> {
-    e.preventDefault();
+  const onSubmitHandler = async(e) => {
+    try{
+      e.preventDefault();
+      setIsAdding(true);
+
+      const blog = {
+        title,
+        subtitle,
+        description: quillRef.current.root.innerHTML,
+        category,
+        isPublished,
+      };
+
+      const formData = new FormData();
+      formData.append('blog', JSON.stringify(blog));
+      formData.append('image', image);
+
+      const {data} = await axios.post('/api/blog/add', formData)
+
+      if(data.success){
+        toast.success(data.message)
+        setImage(false);
+        setTitle("");
+        setSubtitle("");
+        quillRef.current.root.innerHTML = ""
+        setCategory("Startup");
+      }else{
+        toast.error(data.message)
+      }
+    }catch(error){
+        toast.error(error.message)
+    }finally{
+      setIsAdding(false);
+    } 
   }
 
   const editorRef = useRef(null)
@@ -23,7 +63,7 @@ const AddBlog = () => {
   },[])
   
   return (
-    <form onSubmit={onSubmithandler} className='flex-1 bg-blue-50/50 text-gray-600 h-full overflow-scroll' >
+    <form onSubmit={onSubmitHandler} className='flex-1 bg-blue-50/50 text-gray-600 h-full overflow-scroll' >
       <div className='bg-white w-full max-w-3xl p-4 md:p-10 sm:m-10 shadow rounded'>
         <p>Upload Thumbnail</p>
         <label htmlFor="image">
@@ -33,7 +73,7 @@ const AddBlog = () => {
 
         <p className='mt-4'>Blog Title</p>
         <input type="text" placeholder='Type here' className='w-full max-w-lg mt-2 p-2 border border-gray-300 outline-none rounded'
-          onChange={e => setTitle(e.title.value)}
+          onChange={e => setTitle(e.target.value)}
           value={title}
           required
         />
@@ -52,9 +92,10 @@ const AddBlog = () => {
           </button>
         </div>
 
-        <p className='mt-4'>Blog categoty</p>
+        <p className='mt-4'>Blog Category</p>
         <select 
           onChange={e => setCategory(e.target.value)}
+          value={category}
           name='category'
           className='mt-2 px-3 py-2 border text-gray-500 border-gray-300 outline-none rounded'
         >
@@ -74,8 +115,8 @@ const AddBlog = () => {
           />
         </div>
 
-        <button type='submit' className='mt-8 w-40 h-10 bg-primary text-white rounded cursor-pointer text-sm' >
-          Add Blog
+        <button disabled={isAdding} type='submit' className='mt-8 w-40 h-10 bg-primary text-white rounded cursor-pointer text-sm' >
+          {isAdding ? 'Adding...': 'Add Blog'}
         </button>
 
       </div>

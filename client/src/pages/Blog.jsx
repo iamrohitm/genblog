@@ -5,9 +5,11 @@ import Navbar from '../components/Navbar';
 import Moment from 'moment'
 import Loader from '../components/Loader';
 import { useAppContext } from '../context/AppContext';
+import toast from 'react-hot-toast';
 
 const Blog = () => {
-  const {blogs} = useAppContext();
+  // const {blogs} = useAppContext();
+  const {axios} = useAppContext(); 
 
   const {id} = useParams();
   const [data, setData] = useState(null);
@@ -16,18 +18,42 @@ const Blog = () => {
   const [content, setContent] = useState("")
 
   const fetchData = async()=>{
-    const data = blogs.find(item => item._id === id);
-    setData(data)
+    // const data = blogs.find(item => item._id === id);
+    // setData(data)
+    try{
+      const {data} = await axios.get(`/api/blog/${id}`);
+      data.success ? setData(data.blog) : toast.error(data.message)
+    }catch(error){
+        toast.error(error.message)
+    }
+  } 
+
+   const fetchComments = async() => {
+    try{
+      const {data} = await axios.post(`/api/blog/comments`, {blogId: id});
+      data.success ? setComments(data.comment) : toast.error(data.message)
+      
+    }catch(error){
+        toast.error(error.message)
+    }
   }
 
-  const fetchComments = async()=>{
-    setComments(comments_data);
-  }
+  const addComment = async(e) => {
+    e.preventDefault();
+    try{
+      const {data} = await axios.post('/api/blog/add-comment', {blog: id, name, content});
+      if(data.success){
+        toast.success(data.message)
+        setName("");
+        setContent("");
+      }else{
+        toast.error(data.message)
+      }
+    }catch(error){
+        toast.error(error.message)
+    }
+  } 
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    console.log('form submitted')
-  }
 
   useEffect(()=>{
     fetchData();
@@ -74,7 +100,7 @@ const Blog = () => {
       {/* Add a comment section  */}
       <div className='max-w-3xl mx-auto'>
         <p className='font-semibold mb-4'>Add your comment</p>
-        <form className='flex flex-col items-start gap-4 max-w-lg' onSubmit={handleSubmit}>
+        <form onSubmit={addComment} className='flex flex-col items-start gap-4 max-w-lg'>
           <input 
             type="text" 
             placeholder='Name'
