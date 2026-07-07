@@ -109,7 +109,8 @@ const AddBlog = () => {
           }
 
           <button
-          onClick={generateContent}
+            onClick={generateContent}
+            disabled={loading}
             type='button'
             className='absolute bottom-1 right-2 ml-2 text-xs text-white bg-black/70 px-2 py-1.5 rounded hover:underline cursor-pointer'
           >
