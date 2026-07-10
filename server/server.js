@@ -8,7 +8,7 @@ import cookieParser from 'cookie-parser'
 
 
 const app = express()
-await connectDb()
+
 
 //middleware
 app.use(cors());
@@ -24,6 +24,18 @@ app.get('/', (req,res)=>{
     res.json('Api is working');
 })
 
-app.listen(PORT, ()=>{
-    console.log('server is running on port', PORT)
-})
+
+
+const serverOn = async ()=>{
+    try {
+        await connectDb()
+        app.listen(PORT, ()=>{
+            console.log('server is running on port', PORT)
+        })
+    } catch (error) {
+        console.log("Failed to connect to MongoDB");
+        console.error(error);
+    }
+}
+
+serverOn();
