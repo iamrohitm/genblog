@@ -8,7 +8,7 @@ import {parse} from 'marked';
 
 const AddBlog = () => {
 
-  const {axios} = useAppContext();
+  const {axios, navigate} = useAppContext();
   const [isAdding, setIsAdding] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -16,7 +16,6 @@ const AddBlog = () => {
   const [title, setTitle] = useState('')
   // const [subtitle, setSubtitle] = useState('')
   const [category, setCategory] = useState('Startup')
-  const [isPublished, setIsPublished] = useState(false)
 
   const onSubmitHandler = async(e) => {
     try{
@@ -28,7 +27,6 @@ const AddBlog = () => {
         // subtitle,
         description: quillRef.current.root.innerHTML,
         category,
-        isPublished,
       };
 
       const formData = new FormData();
@@ -38,12 +36,14 @@ const AddBlog = () => {
       const {data} = await axios.post('/api/blog/add', formData)
 
       if(data.success){
-        toast.success(data.message)
+        toast.success('Blog submitted for review')
         setImage(false);
         setTitle("");
         // setSubtitle("");
         quillRef.current.root.innerHTML = ""
         setCategory("Startup");
+
+        navigate('/user');
       }else{
         toast.error(data.message)
       }
@@ -82,8 +82,20 @@ const AddBlog = () => {
   },[])
   
   return (
+    
     <form onSubmit={onSubmitHandler} className='flex-1 bg-blue-50/50 text-gray-600 h-full overflow-scroll' >
       <div className='bg-white w-full max-w-3xl p-4 md:p-10 sm:m-10 shadow rounded'>
+        <button
+            type="button"
+            onClick={() => navigate('/user')}
+            className="flex items-center gap-1 mb-6 text-sm text-gray-500 hover:text-primary"
+        >
+            ← Back to Dashboard
+        </button>
+        <h1 className="text-xl font-semibold mb-6">
+            Write a Blog
+        </h1>
+
         <p>Upload Thumbnail</p>
         <label htmlFor="image">
           <img src={!image ? assets.upload_area : URL.createObjectURL(image)} className='mt-2 h-16 rounded cursor-pointer' alt="" />
@@ -134,12 +146,6 @@ const AddBlog = () => {
 
         </select>
 
-        <div className='flex gap-2 mt-4'>
-          <p>Publish Now</p>
-          <input type="checkbox" checked={isPublished} className='scale-125 cursor-pointer'
-            onChange={e => setIsPublished(e.target.checked)}
-          />
-        </div>
 
         <button disabled={isAdding} type='submit' className='mt-8 w-40 h-10 bg-primary text-white rounded cursor-pointer text-sm' >
           {isAdding ? 'Adding...': 'Add Blog'}

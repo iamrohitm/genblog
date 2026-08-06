@@ -8,11 +8,11 @@ import main from '../config/gemini.js'
 
 export const addBlog = async(req , res)=>{
     try {
-        const {title, subTitle, description, category, isPublished} = JSON.parse(req.body.blog);
+        const {title, description, category} = JSON.parse(req.body.blog);
 
         const imageFile = req.file;
 
-        if(!title || !description || !category || !isPublished){
+        if(!title || !description || !category ){
             return res.json({success: false, message: 'Missing fields'})
         }
 
@@ -38,7 +38,7 @@ export const addBlog = async(req , res)=>{
 
         const image = optimizedImageUrl;
 
-        await Blog.create({title, subTitle, description, category, image, isPublished});
+        await Blog.create({title, description, category, image, isPublished: false, author: req.user.id});
         res.json({success: true, message: 'Blog created successfully!'});
 
 
@@ -73,6 +73,25 @@ export const getBlogById = async(req,res)=>{
         res.json({success: false, error: error.message})
     }
 }
+
+export const getMyBlogs = async (req, res) => {
+    try {
+        const blogs = await Blog.find({
+            author: req.user.id
+        }).sort({ createdAt: -1 });
+
+        res.json({
+            success: true,
+            blogs
+        });
+
+    } catch (error) {
+        res.json({
+            success: false,
+            message: error.message
+        });
+    }
+};
 
 
 //deleteBlogById -> you will have id is in req.body

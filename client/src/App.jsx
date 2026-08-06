@@ -11,6 +11,10 @@ import Login from './components/admin/Login'
 import 'quill/dist/quill.snow.css'
 import {Toaster} from 'react-hot-toast'
 import { useAppContext } from './context/AppContext'
+import UserLayout from './pages/user/Layout'
+import UserDashboard from './pages/user/Dashboard'
+import ProtectedRoute from './components/ProtectedRoute'
+import UserAddBlog from './pages/user/AddBlog'
 
 
 const App = () => {
@@ -19,15 +23,30 @@ const App = () => {
     <div>
       <Toaster/>
       <Routes>
+
         <Route path='/' element={<Home />} />
         <Route path='/blog/:id' element={<Blog />} />
+        <Route path='/login' element={<Login />} />
 
-        <Route path='/admin' element={token ? <Layout /> : <Login/>}>
-          <Route index element={<Dashboard />} />
-          <Route path='addBlog' element={<AddBlog />} />
-          <Route path='listBlog' element={<ListBlog />} />
-          <Route path='comments' element={<Comments />} />
+         {/* ADMIN */}
+        <Route element={<ProtectedRoute role="admin" />}>
+            <Route path='/admin' element={<Layout />}>
+                <Route index element={<Dashboard />} />
+                <Route path='addBlog' element={<AddBlog />} />
+                <Route path='listBlog' element={<ListBlog />} />
+                <Route path='comments' element={<Comments />} />
+            </Route>
         </Route>
+
+
+        {/* USER */}
+        <Route element={<ProtectedRoute role="user" />}>
+            <Route path='/user' element={<UserLayout />}>
+                <Route index element={<UserDashboard />} />
+                <Route path='addBlog' element={<UserAddBlog />} />
+            </Route>
+        </Route>
+
 
       </Routes>
     </div>

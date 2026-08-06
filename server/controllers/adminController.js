@@ -1,30 +1,85 @@
 import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
+import User from '../models/User.js';
 import Blog from '../models/Blog.js';
 import Comment from '../models/Comment.js';
 
 
-export const adminLogin = async(req,res)=>{
-    try{
-        const {email, password} = req.body;
-        if(email !== process.env.ADMIN_EMAIL || password !== process.env.ADMIN_PASSWORD){
-            return res.json({success: false, message: 'Invalid Details'})
-        }
+// export const adminLogin = async(req,res)=>{
+//     try{
+//         const {email, password} = req.body;
+//         if(email !== process.env.ADMIN_EMAIL || password !== process.env.ADMIN_PASSWORD){
+//             return res.json({success: false, message: 'Invalid Details'})
+//         }
 
-        const token = jwt.sign({email}, process.env.JWT_SECRET);
+//         const token = jwt.sign({email}, process.env.JWT_SECRET);
         
 
-        // res.cookie('token', token, {
-        //     httpOnly: true,
-        //     secure: false,
-        //     sameSite: 'lax',
-        //     maxAge: 24*60*60*1000
-        // }) 
+//         // res.cookie('token', token, {
+//         //     httpOnly: true,
+//         //     secure: false,
+//         //     sameSite: 'lax',
+//         //     maxAge: 24*60*60*1000
+//         // }) 
 
-        res.json({success: true, token})
-    }catch(err){
-        res.json({success: false, message: err.message})
+//         res.json({success: true, token})
+//     }catch(err){
+//         res.json({success: false, message: err.message})
+//     }
+// }
+
+export const adminLogin = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return res.json({
+                success: false,
+                message: 'Invalid email or password'
+            });
+        }
+
+        const isPasswordCorrect = await bcrypt.compare(
+            password,
+            user.password
+        );
+
+        if (!isPasswordCorrect) {
+            return res.json({
+                success: false,
+                message: 'Invalid email or password'
+            });
+        }
+
+        if (user.role !== 'admin') {
+            return res.json({
+                success: false,
+                message: 'Access denied'
+            });
+        }
+
+        const token = jwt.sign(
+            {
+                id: user._id,
+                role: user.role
+            },
+            process.env.JWT_SECRET
+        );
+
+        res.json({
+            success: true,
+            token
+        });
+
+    } catch (error) {
+        res.json({
+            success: false,
+            message: error.message
+        });
     }
-}
+};
 
 export const getAllBlogAdmin = async(req, res)=>{
     try {
