@@ -7,7 +7,7 @@ const BlogTableItems = ({blog, fetchBlogs, index}) => {
 
     const {title, createdAt} = blog;
 
-    const {axios} = useAppContext() 
+    const {axios,navigate} = useAppContext() 
 
 
     const deleteBlog = async() => {
@@ -50,7 +50,13 @@ const BlogTableItems = ({blog, fetchBlogs, index}) => {
   return (
     <tr className="border-y border-gray-300">
       <th className="px-2 py-4">{index}</th>
-      <td className="px-2 py-4">{title}</td>
+      {/* <td className="px-2 py-4">{title}</td> */}
+      <td
+          onClick={() => navigate(`/admin/blog/${blog._id}`)}
+          className="px-2 py-4 cursor-pointer hover:text-primary font-medium"
+      >
+          {title}
+      </td>
       <td className="px-2 py-4 max-sm:hidden">{BlogDate.toDateString()}</td>
       <td className="px-2 py-4 max-sm:hidden">
         <p className={`${blog.isPublished ? 'text-green-600': 'text-orange-700'}`}>

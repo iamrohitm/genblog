@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useAppContext } from '../../context/AppContext'
+import UserBlogTableItems from "../../components/user/UserBlogTableItems";
 import toast from 'react-hot-toast'
 
 const UserDashboard = () => {
@@ -51,106 +52,52 @@ const UserDashboard = () => {
             </button>
 
 
-            <div className='mt-8 bg-white rounded-lg shadow overflow-hidden'>
+            <div className="relative h-4/5 mt-4 max-w-4xl overflow-x-auto shadow rounded-lg scrollbar-hide bg-white">
 
-                <div className='p-5 border-b'>
-                    <h2 className='text-lg font-semibold'>
-                        My Blogs
-                    </h2>
-                </div>
+    <table className="w-full text-sm text-gray-500">
 
+        <thead className="text-xs text-gray-600 text-left uppercase">
+            <tr>
 
-                {loading ? (
+                <th className="px-2 py-4 xl:px-6">
+                    #
+                </th>
 
-                    <div className='p-6 text-gray-500'>
-                        Loading blogs...
-                    </div>
+                <th className="px-2 py-4">
+                    Blog Title
+                </th>
 
-                ) : blogs.length === 0 ? (
+                <th className="px-2 py-4 max-sm:hidden">
+                    Date
+                </th>
 
-                    <div className='p-6 text-gray-500'>
-                        You haven't submitted any blogs yet.
-                    </div>
+                <th className="px-2 py-4 max-sm:hidden">
+                    Status
+                </th>
 
-                ) : (
+                <th className="px-2 py-4">
+                    Actions
+                </th>
 
-                    <div className='overflow-x-auto'>
+            </tr>
+        </thead>
 
-                        <table className='w-full text-sm'>
+        <tbody>
 
-                            <thead className='bg-gray-50'>
-                                <tr>
-                                    <th className='text-left p-4'>Blog</th>
-                                    <th className='text-left p-4'>Category</th>
-                                    <th className='text-left p-4'>Status</th>
-                                    <th className='text-left p-4'>Date</th>
-                                </tr>
-                            </thead>
+            {blogs.map((blog, index) => (
+                <UserBlogTableItems
+                    key={blog._id}
+                    blog={blog}
+                    index={index + 1}
+                    fetchBlogs={fetchMyBlogs}
+                />
+            ))}
 
-                            <tbody>
+        </tbody>
 
-                                {blogs.map((blog) => (
+    </table>
 
-                                    <tr
-                                        key={blog._id}
-                                        className='border-t'
-                                    >
-
-                                        <td className='p-4'>
-                                            <div className='flex items-center gap-3'>
-
-                                                <img
-                                                    src={blog.image}
-                                                    alt={blog.title}
-                                                    className='w-14 h-10 object-cover rounded'
-                                                />
-
-                                                <span className='font-medium'>
-                                                    {blog.title}
-                                                </span>
-
-                                            </div>
-                                        </td>
-
-                                        <td className='p-4'>
-                                            {blog.category}
-                                        </td>
-
-                                        <td className='p-4'>
-
-                                            {blog.isPublished ? (
-
-                                                <span className='px-3 py-1 rounded-full text-xs bg-green-100 text-green-700'>
-                                                    Published
-                                                </span>
-
-                                            ) : (
-
-                                                <span className='px-3 py-1 rounded-full text-xs bg-yellow-100 text-yellow-700'>
-                                                    Pending
-                                                </span>
-
-                                            )}
-
-                                        </td>
-
-                                        <td className='p-4 text-gray-500'>
-                                            {new Date(blog.createdAt).toLocaleDateString()}
-                                        </td>
-
-                                    </tr>
-
-                                ))}
-
-                            </tbody>
-
-                        </table>
-
-                    </div>
-
-                )}
-
-            </div>
+</div>
 
         </div>
     )

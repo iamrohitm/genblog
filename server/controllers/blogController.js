@@ -95,23 +95,77 @@ export const getMyBlogs = async (req, res) => {
 
 
 //deleteBlogById -> you will have id is in req.body
-export const deleteBlogById = async(req, res)=>{
-    try{
+// export const deleteBlogById = async(req, res)=>{
+//     try{
 
-        const {id} = req.body   
+//         const {id} = req.body   
+//         await Blog.findByIdAndDelete(id);
+
+//         //delete all coments when blog is deleted
+//         await Comment.deleteMany({blogId: id})
+        
+//         res.json({success: true, message: 'Blog deleted successfully'})
+        
+//     }catch(error){
+//         res.json({success: false, message: error.message})
+//     }
+
+// }
+export const deleteBlogById = async (req, res) => {
+    try {
+        const { id } = req.body;
+
+        console.log("Delete ID:", id);
+        console.log("Logged in user:", req.user);
+
+        const blog = await Blog.findById(id);
+         
+        console.log("Found blog:", blog);
+
+        if (!blog) {
+            return res.status(404).json({
+                success: false,
+                message: 'Blog not found'
+            });
+        }
+
+        // User can delete only their own unpublished blog
+        if (req.user.role === 'user') {
+
+            if (blog.author.toString() !== req.user.id) {
+                return res.status(403).json({
+                    success: false,
+                    message: 'You can only delete your own blogs'
+                });
+            }
+
+            if (blog.isPublished) {
+                return res.status(403).json({
+                    success: false,
+                    message: 'Published blogs cannot be deleted'
+                });
+            }
+        }
+
+        // Admin can delete any blog
+
         await Blog.findByIdAndDelete(id);
 
-        //delete all coments when blog is deleted
-        await Comment.deleteMany({blogId: id})
-        
-        res.json({success: true, message: 'Blog deleted successfully'})
-        
-    }catch(error){
-        res.json({success: false, message: error.message})
+        // Delete comments belonging to this blog
+        await Comment.deleteMany({ blog: id });
+
+        res.json({
+            success: true,
+            message: 'Blog deleted successfully'
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
     }
-
-}
-
+};
 
 //togglePublish -> you will have id is in req.body
 export const togglePublish = async(req,res)=>{

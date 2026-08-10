@@ -42,12 +42,9 @@ const Login = () => {
         <div className='flex flex-col items-center justify-center'>
           <div className='w-full py-6 text-center'>
             <h1 className='text-3xl font-bold'>
-              <span className='text-primary'>
-                Login
-              </span>
-              Login
+              <span className='text-primary'>Log</span>in
             </h1>
-            <p className='font-light'>Enter your credentials to access the admin</p>
+            <p className='font-light'>Enter your credentials to access your account</p>
           </div>
 
           <form onSubmit={handleSubmit} className='mt-6 w-full sm:max-w-md text-gray-600'>
@@ -63,6 +60,17 @@ const Login = () => {
 
             <button type='submit' className='w-full py-3 font-medium bg-primary text-white rounded cursor-pointer hover:bg-primary/90 transition-all'>Login</button>
           </form>
+
+          <p className='mt-6 text-sm text-gray-500'>
+            Don't have an account?{' '}
+            <span
+              onClick={() => navigate('/signup')}
+              className='text-primary cursor-pointer hover:underline'
+            >
+              Sign up
+            </span>
+          </p>
+
         </div>
       </div>
 

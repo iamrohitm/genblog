@@ -8,7 +8,7 @@ import toast from "react-hot-toast";
 const ListBlog = () => {
   const [blogs, setBlogs] = useState([]);
 
-  const {axios} = useAppContext()
+  const {axios, navigate} = useAppContext()
 
   const fetchBlogs = async() => {
     // setBlogs(blog_data)

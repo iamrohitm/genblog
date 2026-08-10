@@ -4,6 +4,7 @@ const auth = (req, res, next) => {
     // const token = req.cookies.token;
 
     const token = req.headers.authorization;
+    console.log("Authorization:", req.headers.authorization);
     if (!token) {
         return res.json({
             success: false,

@@ -12,7 +12,7 @@ blogRouter.get('/all', getAllblogs);
 blogRouter.get('/my-blogs', auth, getMyBlogs);
 blogRouter.get('/:blogId', getBlogById);
 
-blogRouter.delete('/delete', auth, isAdmin, deleteBlogById);
+blogRouter.delete('/delete', auth, deleteBlogById);
 blogRouter.post('/toggle-publish',auth, isAdmin, togglePublish);
 
 blogRouter.post('/add-comment', addComment);    
