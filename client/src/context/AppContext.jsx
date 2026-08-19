@@ -15,8 +15,10 @@ export const AppProvider = ({children}) => {
     const [token, setToken] = useState(null)
     const [user, setUser] = useState(null);
     const [blogs, setBlogs] = useState([]) 
+    const [blogsLoading, setBlogsLoading] = useState(true)
     const [input, setInput] = useState("")
     const [authLoading, setAuthLoading] = useState(true);
+    
 
     const fetchBlogs = async()=>{
         try {
@@ -25,6 +27,8 @@ export const AppProvider = ({children}) => {
             data.success ? setBlogs(data.blogs) : toast.error(data.message);
         } catch (error) {
             toast.error(error.message)
+        }finally {
+            setBlogsLoading(false);
         }
     }
 
@@ -45,7 +49,7 @@ export const AppProvider = ({children}) => {
 
     const value = {
         axios, navigate, token, setToken,user,
-        setUser,authLoading, blogs, setBlogs, input, setInput
+        setUser,authLoading, blogs, setBlogs,blogsLoading, input, setInput
     }
 
 

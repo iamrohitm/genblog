@@ -6,6 +6,8 @@ import blogRouter from './routes/blogRoutes.js'
 import adminRouter from './routes/adminRoutes.js'
 import cookieParser from 'cookie-parser'
 import authRouter from './routes/authRoutes.js'
+import paymentRouter from './routes/paymentRoutes.js'
+import { connectRedis } from './config/redis.js';
 
 
 
@@ -19,6 +21,7 @@ app.use(cookieParser())
 app.use('/api/blog', blogRouter);
 app.use('/api/admin', adminRouter);
 app.use('/api/auth', authRouter);
+app.use('/api/payment', paymentRouter);
 
 
 const PORT = process.env.PORT || 3000;
@@ -31,7 +34,8 @@ app.get('/', (req,res)=>{
 
 const serverOn = async ()=>{
     try {
-        await connectDb()
+        await connectDb();
+        await connectRedis();
         app.listen(PORT, ()=>{
             console.log('server is running on port', PORT)
         })

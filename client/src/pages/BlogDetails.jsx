@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useAppContext } from '../context/AppContext'
 import toast from 'react-hot-toast'
+import BlogDetailsSkeleton from '../components/skeleton/BlogDetailsSkeleton'
+
 
 const BlogDetails = () => {
 
@@ -33,11 +35,7 @@ const BlogDetails = () => {
     }, [id])
 
     if (loading) {
-        return (
-            <div className="flex items-center justify-center min-h-[60vh]">
-                <p>Loading blog...</p>
-            </div>
-        )
+        return <BlogDetailsSkeleton />
     }
 
     if (!blog) {

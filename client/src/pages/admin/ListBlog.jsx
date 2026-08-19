@@ -7,6 +7,7 @@ import toast from "react-hot-toast";
 
 const ListBlog = () => {
   const [blogs, setBlogs] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const {axios, navigate} = useAppContext()
 
@@ -14,6 +15,7 @@ const ListBlog = () => {
     // setBlogs(blog_data)
      try{
       const {data} = await axios.get("/api/admin/blogs");
+
       if(data.success){
         setBlogs(data.blogs);
       }else{
@@ -21,6 +23,8 @@ const ListBlog = () => {
       }
     }catch(error){
         toast.error(error.message)
+    }finally {
+        setLoading(false);
     }
   }
   useEffect(()=>{
@@ -43,10 +47,36 @@ const ListBlog = () => {
               </tr>
             </thead>
             <tbody>
-              {
+              { loading ? (
+                    Array.from({ length: 6 }).map((_, index) => (
+                        <tr key={index} className="border-y border-gray-200 animate-pulse">
+                            <td className="px-2 py-4 xl:px-6">
+                                <div className="h-4 w-4 bg-gray-200 rounded" />
+                            </td>
+
+                            <td className="px-2 py-4">
+                                <div className="h-4 bg-gray-200 rounded w-48" />
+                            </td>
+
+                            <td className="px-2 py-4 max-sm:hidden">
+                                <div className="h-4 bg-gray-200 rounded w-24" />
+                            </td>
+
+                            <td className="px-2 py-4 max-sm:hidden">
+                                <div className="h-4 bg-gray-200 rounded w-20" />
+                            </td>
+
+                            <td className="px-2 py-4">
+                                <div className="h-4 bg-gray-200 rounded w-16" />
+                            </td>
+                        </tr>
+                    ))
+                ) : (
+                
                 blogs.map((blog, index)=>{
                   return <BlogTableItems key={blog._id} blog={blog} index={index + 1} fetchBlogs={fetchBlogs}/>
                 })
+                )
               }
             </tbody>
           </table>

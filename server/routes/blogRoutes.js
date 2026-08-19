@@ -3,6 +3,7 @@ import {addBlog, addComment, deleteBlogById, generateContent, getAllblogs, getBl
 import upload from '../middleware/multer.js';
 import auth from '../middleware/auth.js';
 import isAdmin from '../middleware/isAdmin.js';
+import { aiAccess } from '../middleware/aiAccess.js';
 
 
 const blogRouter = express.Router();
@@ -18,7 +19,7 @@ blogRouter.post('/toggle-publish',auth, isAdmin, togglePublish);
 blogRouter.post('/add-comment', addComment);    
 blogRouter.post('/comments', getBlogComments)
 
-blogRouter.post('/generate',auth, generateContent)
+blogRouter.post('/generate', auth, aiAccess, generateContent)
 
 
 export default blogRouter;

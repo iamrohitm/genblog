@@ -9,8 +9,12 @@ import {parse} from 'marked';
 const AddBlog = () => {
 
   const {axios, navigate} = useAppContext();
+
   const [isAdding, setIsAdding] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const [isSubscribeModalOpen, setIsSubscribeModalOpen] = useState(false);
+  const [isSubscribing, setIsSubscribing] = useState(false);
 
   const [image, setImage] = useState(false)
   const [title, setTitle] = useState('')
@@ -55,7 +59,7 @@ const AddBlog = () => {
   }
 
 
-  const generateContent = async()=>{
+const generateContent = async()=>{
     if(!title) return toast.error('Please enter a title to generate content')
     try {
       setLoading(true);
@@ -66,11 +70,119 @@ const AddBlog = () => {
         toast.error(data.message)
       }
     } catch (error) {
-      toast.error(error.message)
+      if (error.response?.status === 403) {
+            setIsSubscribeModalOpen(true);
+        } else {
+            toast.error(
+              error.response?.data?.message || error.message
+            );
+        }
     }finally{
       setLoading(false)
     }
   }
+
+const subscribeToAI = async () => {
+
+    try {
+
+        setIsSubscribing(true);
+
+        // 1. Create Razorpay order
+        const { data } = await axios.post(
+            '/api/payment/create-order'
+        );
+
+        if (!data.success) {
+            toast.error(data.message);
+            return;
+        }
+
+        const options = {
+            key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+            amount: data.order.amount,
+            currency: data.order.currency,
+            name: 'GenBlog',
+            description: 'AI Feature Subscription',
+            order_id: data.order.id,
+
+            handler: async function (response) {
+
+                try {
+
+                    // 2. Verify payment
+                    const { data } = await axios.post(
+                        '/api/payment/verify',
+                        response
+                    );
+
+                    if (data.success) {
+
+                        toast.success(
+                            'Subscription activated successfully!'
+                        );
+
+                        setIsSubscribeModalOpen(false);
+
+                        try {
+                            setLoading(true);
+
+                            const { data: aiData } = await axios.post(
+                                '/api/blog/generate',
+                                { prompt: title }
+                            );
+
+                            if (aiData.success) {
+                                quillRef.current.root.innerHTML = parse(aiData.content);
+                            } else {
+                                toast.error(aiData.message);
+                            }
+
+                        } catch (error) {
+                            toast.error(
+                                error.response?.data?.message || error.message
+                            );
+                        } finally {
+                            setLoading(false);
+                        }
+
+                    } else {
+                        toast.error(data.message);
+                    }
+
+                } catch (error) {
+
+                    toast.error(
+                        error.response?.data?.message ||
+                        error.message
+                    );
+
+                } finally {
+                    setIsSubscribing(false);
+                }
+            },
+
+            modal: {
+                ondismiss: function () {
+                    setIsSubscribing(false);
+                }
+            }
+        };
+
+        const razorpay = new window.Razorpay(options);
+
+        razorpay.open();
+
+    } catch (error) {
+
+        setIsSubscribing(false);
+
+        toast.error(
+            error.response?.data?.message ||
+            error.message
+        );
+    }
+};
 
   const editorRef = useRef(null)
   const quillRef = useRef(null) 
@@ -83,8 +195,8 @@ const AddBlog = () => {
   
   return (
     
-    <form onSubmit={onSubmitHandler} className='flex-1 bg-blue-50/50 text-gray-600 h-full overflow-scroll' >
-      <div className='bg-white w-full max-w-3xl p-4 md:p-10 sm:m-10 shadow rounded'>
+    <form onSubmit={onSubmitHandler} className='flex-1 bg-blue-50/50 text-gray-600 h-full overflow-y-auto flex justify-center' >
+      <div className='bg-white w-full max-w-3xl p-4 md:p-10 my-8 mx-4 md:mx-8 shadow rounded h-fit'>
         <button
             type="button"
             onClick={() => navigate('/user')}
@@ -152,6 +264,49 @@ const AddBlog = () => {
         </button>
 
       </div>
+
+      {isSubscribeModalOpen && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+
+                <div className="bg-white w-full max-w-sm rounded-lg shadow-xl p-6">
+
+                    <h2 className="text-xl font-semibold text-gray-800">
+                        Unlock AI Generation
+                    </h2>
+
+                    <p className="mt-2 text-sm text-gray-500">
+                        Subscribe for ₹1 and get access to AI blog
+                        generation for 1 month.
+                    </p>
+
+                    <div className="flex gap-3 mt-6">
+
+                        <button
+                            type="button"
+                            onClick={() => setIsSubscribeModalOpen(false)}
+                            disabled={isSubscribing}
+                            className="flex-1 border border-gray-300 py-2 rounded"
+                        >
+                            Cancel
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={subscribeToAI}
+                            disabled={isSubscribing}
+                            className="flex-1 bg-primary text-white py-2 rounded"
+                        >
+                            {isSubscribing
+                                ? 'Processing...'
+                                : 'Subscribe ₹1'}
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+        )}
     
     </form>
   )

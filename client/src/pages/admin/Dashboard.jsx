@@ -3,9 +3,11 @@ import { assets, dashboard_data } from "../../assets/assets";
 import BlogTableItems from "../../components/admin/BlogTableItems";
 import { useAppContext } from "../../context/AppContext";
 import toast from "react-hot-toast";
-
+import DashboardSkeleton from "../../components/skeleton/DashboardSkeleton";
 
 const Dashboard = () => {
+
+  const [loading, setLoading] = useState(true);
 
   const {axios} = useAppContext()
 
@@ -23,14 +25,24 @@ const Dashboard = () => {
       data.success ? setDashboardData(data.dashboardData) : toast.error(data.message) 
     }catch(error){
       toast.error(error.message)
+    }finally {
+      setLoading(false);
     }
   }
+
   useEffect(()=>{
     fetchDashboard();
   },[])
 
   return (
     <div className="flex-1 p-4 md:p-10 bg-blue-50/50">
+
+      {loading ? (
+            <DashboardSkeleton />
+        ) : (
+      
+      <>
+
       <div className="flex flex-wrap gap-4">
         
         <div className="flex items-center gap-4 bg-white p-4 min-w-58 rounded shadow cursor-pointer 
@@ -90,7 +102,9 @@ const Dashboard = () => {
           </table>
         </div>
       </div>
-
+      
+       </>
+      )}
     </div>
   )
 }

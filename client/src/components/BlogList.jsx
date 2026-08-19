@@ -3,10 +3,12 @@ import { blog_data, blogCategories } from "../assets/assets"
 import {motion, spring} from 'motion/react'
 import BlogCard from "./BlogCard"
 import { useAppContext } from "../context/AppContext"
+import BlogCardSkeleton from "./skeleton/BlogCardSkeleton"
+// import BlogCardSkeleton from "../skeleton/BlogCardSkeleton";
 
 const BlogList= () => { 
     const [menu, setMenu] = useState('All')
-    const {blogs, input} = useAppContext();
+    const {blogs, input, blogsLoading} = useAppContext();
 
     const filteredBlogs = () => {
         if(input == ''){
@@ -38,12 +40,34 @@ const BlogList= () => {
                 </div>
             ))}
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-24 sm:mx-16 xl:mx-40">
-            {
+        <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            {/* {
                 filteredBlogs().filter((blog)=> menu === 'All' ? true : blog.category === menu).map((blog)=>
                 <BlogCard key={blog._id} blog={blog} />
                 )
-            }
+            } */}
+            {
+    blogsLoading ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {Array.from({ length: 6 }).map((_, index) => (
+                <BlogCardSkeleton key={index} />
+            ))}
+        </div>
+    ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {filteredBlogs()
+                .filter((blog) =>
+                    menu === 'All' ? true : blog.category === menu
+                )
+                .map((blog) => (
+                    <BlogCard
+                        key={blog._id}
+                        blog={blog}
+                    />
+                ))}
+        </div>
+    )
+}
         </div>
 
     </div>

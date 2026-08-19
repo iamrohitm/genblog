@@ -3,6 +3,7 @@ import imagekit from '../config/imageKit.js'
 import Blog from '../models/Blog.js'
 import Comment from '../models/Comment.js'
 import main from '../config/gemini.js'
+import { redisClient } from '../config/redis.js';
 
 
 
@@ -39,6 +40,9 @@ export const addBlog = async(req , res)=>{
         const image = optimizedImageUrl;
 
         await Blog.create({title, description, category, image, isPublished: false, author: req.user.id});
+
+        await redisClient.del('genblog:blogs');
+
         res.json({success: true, message: 'Blog created successfully!'});
 
 
@@ -51,8 +55,42 @@ export const addBlog = async(req , res)=>{
 
 export const getAllblogs = async(req,res)=>{
     try {
-        const blogs = await Blog.find({isPublished: true});
-        res.json({success: true, blogs})        
+        // const blogs = await Blog.find({isPublished: true});
+        // res.json({success: true, blogs})   
+         // 1. Check Redis first
+        const cachedBlogs = await redisClient.get('genblog:blogs');
+
+        if (cachedBlogs) {
+
+            console.log('Redis cache HIT');
+
+            return res.json({
+                success: true,
+                blogs: JSON.parse(cachedBlogs)
+            });
+        }
+
+        console.log('Redis cache MISS');
+
+        // 2. Redis doesn't have the blogs
+        const blogs = await Blog.find({
+            isPublished: true
+        });
+
+        // 3. Store blogs in Redis
+        await redisClient.set(
+            'genblog:blogs',
+            JSON.stringify(blogs),
+            {
+                EX: 60
+            }
+        );
+
+        // 4. Return blogs
+        res.json({
+            success: true,
+            blogs
+        });     
     } catch (error) {
         res.json({success: false, error: error.message})
     }
@@ -118,7 +156,16 @@ export const deleteBlogById = async (req, res) => {
         console.log("Delete ID:", id);
         console.log("Logged in user:", req.user);
 
-        const blog = await Blog.findById(id);
+        let blog;
+
+        if (req.user.role === 'admin') {
+            blog = await Blog.findById(id);
+        } else {
+            blog = await Blog.findOne({
+                _id: id,
+                author: req.user.id
+            });
+        }
          
         console.log("Found blog:", blog);
 
@@ -132,12 +179,12 @@ export const deleteBlogById = async (req, res) => {
         // User can delete only their own unpublished blog
         if (req.user.role === 'user') {
 
-            if (blog.author.toString() !== req.user.id) {
-                return res.status(403).json({
-                    success: false,
-                    message: 'You can only delete your own blogs'
-                });
-            }
+            // if (blog.author.toString() !== req.user.id) {
+            //     return res.status(403).json({
+            //         success: false,
+            //         message: 'You can only delete your own blogs'
+            //     });
+            // }
 
             if (blog.isPublished) {
                 return res.status(403).json({
@@ -153,6 +200,9 @@ export const deleteBlogById = async (req, res) => {
 
         // Delete comments belonging to this blog
         await Comment.deleteMany({ blog: id });
+
+        // Invalidate public blogs cache
+        await redisClient.del('genblog:blogs'); 
 
         res.json({
             success: true,
@@ -174,11 +224,15 @@ export const togglePublish = async(req,res)=>{
         const blog = await Blog.findById(id);
 
         if(!blog){
-            res.send({success: false, message: 'Blog not found'})
+            return res.status(404).json({success: false, message: 'Blog not found'})
         }
         
         blog.isPublished = !blog.isPublished;
         await blog.save();
+
+        // Invalidate public blogs cache
+        await redisClient.del('genblog:blogs');
+
         res.json({
             success: true,
             message: `Blog ${
@@ -187,7 +241,7 @@ export const togglePublish = async(req,res)=>{
             blog
         });
     } catch (error) {
-        res.json({success: false, message: error.message})
+        res.status(500).json({success: false, message: error.message})
     }
 }
 
@@ -212,7 +266,7 @@ export const getBlogComments = async(req,res)=>{
 }
 
 export const generateContent = async(req,res)=>{
-    try {
+    try {   
         const {prompt} = req.body;
         const content = await main(prompt + 'Generate a blog content for this topic in simple text format')
         res.json({success:true, content})

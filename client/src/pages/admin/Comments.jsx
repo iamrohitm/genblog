@@ -10,6 +10,7 @@ const Comments = () => {
   const {axios} = useAppContext()
 
   const [comments, setComments] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('Not Approved');
 
   const fetchComments = async() => {
@@ -19,6 +20,8 @@ const Comments = () => {
       data.success ? setComments(data.comments) : toast.error(data.message)
     }catch(error){
       toast.error(error.message)
+    }finally {
+      setLoading(false);
     }
   }
   useEffect(()=>{
@@ -56,11 +59,34 @@ const Comments = () => {
             </tr>
           </thead>
           <tbody>
-            {comments.filter((comment)=>{
+            {loading ? (
+                Array.from({ length: 6 }).map((_, index) => (
+                    <tr
+                        key={index}
+                        className="border-y border-gray-200 animate-pulse"
+                    >
+                        <td className="px-6 py-4">
+                            <div className="h-4 w-48 bg-gray-200 rounded" />
+                            <div className="h-3 w-64 bg-gray-200 rounded mt-2" />
+                        </td>
+
+                        <td className="px-6 py-4 max-sm:hidden">
+                            <div className="h-4 w-24 bg-gray-200 rounded" />
+                        </td>
+
+                        <td className="px-6 py-4">
+                            <div className="h-8 w-16 bg-gray-200 rounded" />
+                        </td>
+                    </tr>
+                ))
+            ) : (
+            comments.filter((comment)=>{
               if(filter == "Approved") return comment.isApproved == true;
               return comment.isApproved == false
             }).map((comment, index)=> <CommentTableItems key={comment._id} comment={comment} index={index+1} fetchComments={fetchComments} /> )          
-            }
+            )  
+          }
+          
           </tbody>
         </table>
 
