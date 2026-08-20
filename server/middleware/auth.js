@@ -4,7 +4,8 @@ const auth = (req, res, next) => {
     // const token = req.cookies.token;
 
     const token = req.headers.authorization;
-    console.log("Authorization:", req.headers.authorization);
+    // console.log("Authorization:", req.headers.authorization);
+    
     if (!token) {
         return res.json({
             success: false,
@@ -14,6 +15,7 @@ const auth = (req, res, next) => {
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET)
+        // console.log("Decoded user:", decoded);
         req.user = decoded;
         next()
     } catch (error) {
