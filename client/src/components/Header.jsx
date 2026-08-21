@@ -33,7 +33,7 @@ const Header = () => {
         </h1>
 
         <p className='my-6 sm:my-8 max-w-2xl m-auto max-sm:text-xs text-gray-500'>
-    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Eveniet repellendus, repellat sapiente beatae, ratione nisi debitis quas tempore non rerum perspiciatis sequi, qui aspernatur unde corporis nostrum consequatur? Optio earum corrupti minus voluptates asperiores? Animi explicabo non cumque qui accusamus quod, atque fugiat pariatur possimus cum, quas, dicta repellendus dolorem.
+          Share your ideas, discover new perspectives, and create engaging blogs with ease. GenBlog gives you a simple platform to write, publish, and explore content — with AI-powered tools to make blogging even easier.
         </p>
         {/* <img src={assets.gradientBackground} className='absolute-top-50 -z-1 opacity-50' alt="" /> */}
 
