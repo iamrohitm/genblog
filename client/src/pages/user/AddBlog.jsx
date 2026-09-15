@@ -265,7 +265,8 @@ const subscribeToAI = async () => {
 
       </div>
 
-      {isSubscribeModalOpen && (
+      {/* commented for test mode, this modal is for regular payment mode  */}
+      {/* {isSubscribeModalOpen && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
 
                 <div className="bg-white w-full max-w-sm rounded-lg shadow-xl p-6">
@@ -306,8 +307,104 @@ const subscribeToAI = async () => {
                 </div>
 
             </div>
-        )}
+        )} */}
     
+      {/* test mode modal  */}
+      
+      {isSubscribeModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+
+              <div className="bg-white w-full max-w-sm rounded-lg shadow-xl p-6">
+
+                  <h2 className="text-xl font-semibold text-gray-800">
+                      Unlock AI Generation
+                  </h2>
+
+                  <p className="mt-2 text-sm text-gray-500">
+                      Subscribe for ₹1 and get access to AI blog
+                      generation for 1 month.
+                  </p>
+
+                  {/* Test Payment Details */}
+                  <div className="mt-5 rounded-md border border-yellow-200 bg-yellow-50 p-4">
+
+                      <p className="text-sm font-semibold text-gray-800">
+                          🧪 Test Payment Mode
+                      </p>
+
+                      <p className="mt-1 text-xs text-gray-600">
+                          Use these details in the Razorpay checkout:
+                      </p>
+
+                      <div className="mt-3 space-y-2 text-xs text-gray-700">
+
+                          <div className="flex justify-between gap-3">
+                              <span>Card Number</span>
+                              <span className="font-medium">
+                                  4111 1111 1111 1111
+                              </span>
+                          </div>
+
+                          <div className="flex justify-between gap-3">
+                              <span>Expiry</span>
+                              <span className="font-medium">
+                                  Any future date
+                              </span>
+                          </div>
+
+                          <div className="flex justify-between gap-3">
+                              <span>CVV</span>
+                              <span className="font-medium">
+                                  Any 3 digits
+                              </span>
+                          </div>
+
+                          <div className="flex justify-between gap-3">
+                              <span>Name</span>
+                              <span className="font-medium">
+                                  Any name
+                              </span>
+                          </div>
+
+                      </div>
+
+                      <p className="mt-3 text-[11px] text-gray-500">
+                          This is a test transaction. No real money will be charged.
+                      </p>
+
+                  </div>
+
+                  <div className="flex gap-3 mt-6">
+
+                      <button
+                          type="button"
+                          onClick={() => setIsSubscribeModalOpen(false)}
+                          disabled={isSubscribing}
+                          className="flex-1 border border-gray-300 py-2 rounded"
+                      >
+                          Cancel
+                      </button>
+
+                      <button
+                          type="button"
+                          onClick={subscribeToAI}
+                          disabled={isSubscribing}
+                          className="flex-1 bg-primary text-white py-2 rounded"
+                      >
+                          {isSubscribing
+                              ? 'Processing...'
+                              : 'Subscribe ₹1'}
+                      </button>
+
+                  </div>
+
+              </div>
+
+          </div>
+      )}
+
+
+
     </form>
   )
 }
