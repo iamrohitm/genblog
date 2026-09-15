@@ -184,6 +184,17 @@ const subscribeToAI = async () => {
     }
 };
 
+const TEST_CARD_NUMBER = '4100 2800 0000 1007';
+
+const copyTestCard = async () => {
+    try {
+        await navigator.clipboard.writeText(TEST_CARD_NUMBER);
+        toast.success('Test card number copied!');
+    } catch (error) {
+        toast.error('Unable to copy card number');
+    }
+};
+
   const editorRef = useRef(null)
   const quillRef = useRef(null) 
 
@@ -311,97 +322,104 @@ const subscribeToAI = async () => {
     
       {/* test mode modal  */}
       
-      {isSubscribeModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+      
+{isSubscribeModalOpen && (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
 
-              <div className="bg-white w-full max-w-sm rounded-lg shadow-xl p-6">
+        <div className="bg-white w-full max-w-sm rounded-lg shadow-xl p-6">
 
-                  <h2 className="text-xl font-semibold text-gray-800">
-                      Unlock AI Generation
-                  </h2>
+            <h2 className="text-xl font-semibold text-gray-800">
+                Unlock AI Generation
+            </h2>
 
-                  <p className="mt-2 text-sm text-gray-500">
-                      Subscribe for ₹1 and get access to AI blog
-                      generation for 1 month.
-                  </p>
+            <p className="mt-2 text-sm text-gray-500">
+                Subscribe for ₹1 and get access to AI blog
+                generation for 1 month.
+            </p>
 
-                  {/* Test Payment Details */}
-                  <div className="mt-5 rounded-md border border-yellow-200 bg-yellow-50 p-4">
+            {/* Test Payment Details */}
+            <div className="mt-5 rounded-md border border-yellow-200 bg-yellow-50 p-4">
 
-                      <p className="text-sm font-semibold text-gray-800">
-                          🧪 Test Payment Mode
-                      </p>
+    <p className="text-sm font-semibold text-gray-800">
+        🧪 Test Payment Mode
+    </p>
 
-                      <p className="mt-1 text-xs text-gray-600">
-                          Use these details in the Razorpay checkout:
-                      </p>
+    <p className="mt-1 text-xs text-gray-600">
+        In Razorpay Checkout, select <b>Card</b> and use the
+        following test details:
+    </p>
 
-                      <div className="mt-3 space-y-2 text-xs text-gray-700">
+    <div className="mt-3">
 
-                          <div className="flex justify-between gap-3">
-                              <span>Card Number</span>
-                              <span className="font-medium">
-                                  4111 1111 1111 1111
-                              </span>
-                          </div>
+        <p className="text-xs text-gray-600 mb-1">
+            Visa Test Card
+        </p>
 
-                          <div className="flex justify-between gap-3">
-                              <span>Expiry</span>
-                              <span className="font-medium">
-                                  Any future date
-                              </span>
-                          </div>
+        <div className="flex items-center gap-2">
+            <div className="flex-1 rounded border border-gray-300 bg-white px-3 py-2 text-sm font-medium break-all">
+                {TEST_CARD_NUMBER}
+            </div>
 
-                          <div className="flex justify-between gap-3">
-                              <span>CVV</span>
-                              <span className="font-medium">
-                                  Any 3 digits
-                              </span>
-                          </div>
+            <button
+                type="button"
+                onClick={copyTestCard}
+                className="px-3 py-2 text-xs font-medium bg-white border border-gray-300 rounded hover:bg-gray-100"
+            >
+                Copy
+            </button>
+        </div>
 
-                          <div className="flex justify-between gap-3">
-                              <span>Name</span>
-                              <span className="font-medium">
-                                  Any name
-                              </span>
-                          </div>
+        <p className="mt-3 text-xs text-gray-600">
+            Expiry: <span className="font-medium">Any future date</span>
+        </p>
 
-                      </div>
+        <p className="mt-1 text-xs text-gray-600">
+            CVV: <span className="font-medium">Any 3 digits</span>
+        </p>
 
-                      <p className="mt-3 text-[11px] text-gray-500">
-                          This is a test transaction. No real money will be charged.
-                      </p>
+        <p className="mt-1 text-xs text-gray-600">
+            Name: <span className="font-medium">Any name</span>
+        </p>
 
-                  </div>
+    </div>
 
-                  <div className="flex gap-3 mt-6">
+    <p className="mt-3 text-[11px] text-gray-500">
+        This is a Razorpay Test Mode transaction. No real money
+        will be charged.
+    </p>
 
-                      <button
-                          type="button"
-                          onClick={() => setIsSubscribeModalOpen(false)}
-                          disabled={isSubscribing}
-                          className="flex-1 border border-gray-300 py-2 rounded"
-                      >
-                          Cancel
-                      </button>
+</div>
 
-                      <button
-                          type="button"
-                          onClick={subscribeToAI}
-                          disabled={isSubscribing}
-                          className="flex-1 bg-primary text-white py-2 rounded"
-                      >
-                          {isSubscribing
-                              ? 'Processing...'
-                              : 'Subscribe ₹1'}
-                      </button>
+            <div className="flex gap-3 mt-6">
 
-                  </div>
+                <button
+                    type="button"
+                    onClick={() => setIsSubscribeModalOpen(false)}
+                    disabled={isSubscribing}
+                    className="flex-1 border border-gray-300 py-2 rounded"
+                >
+                    Cancel
+                </button>
 
-              </div>
+                <button
+                    type="button"
+                    onClick={subscribeToAI}
+                    disabled={isSubscribing}
+                    className="flex-1 bg-primary text-white py-2 rounded"
+                >
+                    {isSubscribing
+                        ? 'Processing...'
+                        : 'Subscribe ₹1'}
+                </button>
 
-          </div>
-      )}
+            </div>
+
+        </div>
+
+    </div>
+)}
+
+
 
 
 
